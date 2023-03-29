@@ -51,7 +51,7 @@ int trace_pid(struct request *rq)
 	u64 id = bpf_get_current_pid_tgid();
 	struct piddata piddata = {};
 
-	piddata.pid = id;
+	piddata.pid = id >> 32;
 	bpf_get_current_comm(&piddata.comm, sizeof(&piddata.comm));
 	bpf_map_update_elem(&infobyreq, &rq, &piddata, 0);
 	return 0;
@@ -126,7 +126,7 @@ SEC("tp_btf/block_rq_complete")
 int BPF_PROG(block_rq_complete, struct request *rq, int error,
 	     unsigned int nr_bytes)
 {
-	u64 slot, ts = bpf_ktime_get_ns();
+	u64 ts = bpf_ktime_get_ns();
 	struct piddata *piddatap;
 	struct event event = {};
 	struct stage *stagep;

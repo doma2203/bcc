@@ -80,6 +80,7 @@ static const struct argp_option opts[] = {
 	  "the amount of time in microseconds under which we store traces (default U64_MAX)" },
 	{ "state", OPT_STATE, "STATE", 0, "filter on this thread state bitmask (eg, 2 == TASK_UNINTERRUPTIBLE) see include/linux/sched.h" },
 	{ "verbose", 'v', NULL, 0, "Verbose debug output" },
+	{ NULL, 'h', NULL, OPTION_HIDDEN, "Show the full help" },
 	{},
 };
 
@@ -88,6 +89,9 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
 	static int pos_args;
 
 	switch (key) {
+	case 'h':
+		argp_state_help(state, stderr, ARGP_HELP_STD_HELP);
+		break;
 	case 'v':
 		env.verbose = true;
 		break;
@@ -268,11 +272,11 @@ int main(int argc, char **argv)
 	if (err)
 		return err;
 	if (env.user_threads_only && env.kernel_threads_only) {
-		fprintf(stderr, "user_threads_only, kernel_threads_only cann't be used together.\n");
+		fprintf(stderr, "user_threads_only and kernel_threads_only cannot be used together.\n");
 		return 1;
 	}
 	if (env.min_block_time >= env.max_block_time) {
-		fprintf(stderr, "min_block_time should smaller than max_block_time\n");
+		fprintf(stderr, "min_block_time should be smaller than max_block_time\n");
 		return 1;
 	}
 
